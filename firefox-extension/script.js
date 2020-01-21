@@ -65,7 +65,8 @@ const volatilityHelper = {
             <span style="font-size: 12px;">
                 <strong>Team strength</strong> is a percentage of your team's capacity that was utilized for a sprint. For example, if you have three
                 engineers, but one is out for 3 days in a 2-week sprint, your team strength would be 27 out of 30 dev days, so 90%.<br/><br/>
-                <strong>Running velocity</strong> is the average velocity over the last N sprints (in this case N=${this.normalizedVelocities.length})<br/><br/>
+                <strong>Running velocity</strong> is the average velocity over the last 3 sprints. We don't want to go back further than that, because
+                as the team evolves older data is less likely to help forecast new outcomes.<br/><br/>
                 <strong>Volatility</strong> is a measure of how much velocity changes sprint to sprint. A <strong>low volatility (<20%)</strong>
                 indicates a stable velocity and makes forecasting more predictable. A <strong>high volatility (>50%)</strong> means we have lower
                 confidence in our forecasting, as we may get much more or less work done in a given sprint than average.
