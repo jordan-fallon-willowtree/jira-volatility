@@ -11,8 +11,12 @@
 
     "content_scripts": [
         {
-        "matches": ["https://jira.willowtreeapps.com/*chart=velocityChart"],
-        "js": ["script.js"]
+            "matches": ["https://jira.willowtreeapps.com/*chart=velocityChart"],
+            "js": ["volatility.js"]
+        },
+        {
+            "matches": ["https://jira.willowtreeapps.com/*view=planning.nodetail*"],
+            "js": ["velocity.js"]
         }
     ]
 }
