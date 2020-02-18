@@ -15,7 +15,7 @@
             "js": ["volatility.js"]
         },
         {
-            "matches": ["https://jira.willowtreeapps.com/*view=planning.nodetail*"],
+            "matches": ["https://jira.willowtreeapps.com/*"],
             "js": ["velocity.js"]
         }
     ]

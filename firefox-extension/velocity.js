@@ -62,8 +62,8 @@ function figureOutVelocity() {
         promises.push(breakdownSprint(sprintId))
     })
     Promise.all(promises).then(() => {
-        console.log(issues)
-        const dedupedIssues = [...new Set(issues
+        const dedupedIssues = issues
+            .filter((issue, index, self) => self.findIndex(i => i.id === issue.id) === index)
             .map(issue => ({
                     id: issue.id,
                     points: issue.fields.customfield_10004, 
@@ -71,49 +71,39 @@ function figureOutVelocity() {
                     platform: getPlatform(issue)
                 }))
             .sort((a, b) => a.done > b.done)
-        )]
         // console.log(dedupedIssues)
-        // console.log(`total velocity: ${dedupedIssues.reduce((total, issue) => total + issue.points, 0 )}`)
+        const initialTotalVelocity = dedupedIssues.reduce((total, issue) => total + issue.points, 0 )
 
         const firstDate = dedupedIssues[0].done
         const lastDate = dedupedIssues[dedupedIssues.length - 1].done
         const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7
         const numberOfIterations = Math.ceil((lastDate - firstDate) / millisecondsPerWeek)
-        console.log(`number of iterations: ${ numberOfIterations }`)
+        // console.log(`number of iterations: ${ numberOfIterations }`)
 
         const iterations = []
         for(i = 0; i < numberOfIterations; i++) {
-            iterations.push({ android: 0, iOS: 0, web: 0, qa: 0 })
+            iterations.push({ android: 0, iOS: 0, web: 0, qa: 0, issueIds: [] })
         }
 
         const velocityByIteration = dedupedIssues
             .reduce((result, issue) => {
                 const iterationIndex = ((issue.done - firstDate) / millisecondsPerWeek).toFixed()
                 result[iterationIndex][issue.platform] += issue.points
+                result[iterationIndex].issueIds.push(issue.id)
                 return result
             },
             iterations)
-        console.log(velocityByIteration)
+        // console.log(velocityByIteration)
 
-        console.log(`Android running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.android, 0) / numberOfIterations}`)
-        console.log(`iOS running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.iOS, 0) / numberOfIterations}`)
-        console.log(`Web running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.web, 0) / numberOfIterations}`)
-        console.log(`QA running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.qa, 0) / numberOfIterations}`)
-        // console.log(`total velocity again: ${velocityByIteration.reduce((total, iteration) => total + iteration.qa + iteration.android + iteration.iOS + iteration.web, 0)}`)
-
-        // console.log(dedupedIssues
-        //     .reduce((obj, issue) => {
-        //         if(isApple(issue)) {
-        //             obj.apple.push(issue)
-        //         } else if(isAndroid(issue)) {
-        //             obj.android.push(issue)
-        //         } else if(isWeb(issue)) {
-        //             obj.web.push(issue)
-        //         }
-        //         return obj
-        //     }, 
-        //     {android: [], apple: [], web: []})
-        // )
+        const decomposedTotalVelocity = velocityByIteration.reduce((total, iteration) => total + iteration.qa + iteration.android + iteration.iOS + iteration.web, 0)
+        if(decomposedTotalVelocity === initialTotalVelocity) {
+            console.log(`Android running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.android, 0) / numberOfIterations}`)
+            console.log(`iOS running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.iOS, 0) / numberOfIterations}`)
+            console.log(`Web running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.web, 0) / numberOfIterations}`)
+            console.log(`QA running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.qa, 0) / numberOfIterations}`)
+        } else {
+            console.log(`Something went wrong! Our initial total velocity of ${initialTotalVelocity} wasn't reflected in the final calculation. Instead, we got ${decomposedTotalVelocity}`)
+        }
     })
 }
 figureOutVelocity()
