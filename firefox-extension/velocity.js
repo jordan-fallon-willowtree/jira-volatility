@@ -2,10 +2,11 @@ console.log('Jira velocity loaded! 🐧')
 
 const pointField = 'customfield_10004'
 const sprintIds = [
-    1405, // 28
+    // 1405, // 28
     1406, // 29
     1414, // 30
     1422, // 31
+    1424, // 32
 ]
 
 const APPLE = 'apple'
@@ -38,6 +39,7 @@ function getSprints() {
         .then(res => res.json())
         .then(data => console.log(data.values.map(sprint => ({id: sprint.id, name: sprint.name}))))
 }
+// getSprints()
 
 const issues = []
 function breakdownSprint(sprintId) {
