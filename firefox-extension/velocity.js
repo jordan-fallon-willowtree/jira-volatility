@@ -102,22 +102,27 @@ function figureOutVelocity() {
                 }))
             .sort((a, b) => a.done > b.done)
         // console.log(dedupedIssues)
-        const initialTotalVelocity = dedupedIssues.reduce((total, issue) => total + issue.points, 0 )
-
         const firstDate = dedupedIssues[0].done
         const lastDate = dedupedIssues[dedupedIssues.length - 1].done
         const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7
-        const numberOfIterations = Math.ceil((lastDate - firstDate) / millisecondsPerWeek)
+        const numberOfIterations = Math.floor((lastDate - firstDate) / millisecondsPerWeek)
         // console.log(`number of iterations: ${ numberOfIterations }`)
+
+        const lastDateWeCareAbout = new Date(firstDate)
+        lastDateWeCareAbout.setDate(lastDateWeCareAbout.getDate() + numberOfIterations * 7)
+
+        const issuesInChosenSprints = dedupedIssues
+            .filter(issue => issue.done < lastDateWeCareAbout)
+        const initialTotalVelocity = issuesInChosenSprints.reduce((total, issue) => total + issue.points, 0 )
 
         const iterations = []
         for(i = 0; i < numberOfIterations; i++) {
             iterations.push({ [ANDROID]: 0, [APPLE]: 0, [WEB]: 0, [QA]: 0, issueIds: [] })
         }
 
-        const velocityByIteration = dedupedIssues
+        const velocityByIteration = issuesInChosenSprints
             .reduce((result, issue) => {
-                const iterationIndex = ((issue.done - firstDate) / millisecondsPerWeek).toFixed()
+                const iterationIndex = Math.floor((issue.done - firstDate) / millisecondsPerWeek)
                 result[iterationIndex][issue.platform] += issue.points
                 result[iterationIndex].issueIds.push(issue.id)
                 return result
