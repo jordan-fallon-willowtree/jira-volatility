@@ -2,8 +2,7 @@
 mkdir -p build
 mkdir -p tmp
 cp volatility.png tmp
-cp firefox-extension/manifest.json tmp
-cp firefox-extension/script.js tmp
+cp firefox-extension/* tmp
 cd tmp
 zip -r -FS ../build/firefox-extension.zip *
 cd -
