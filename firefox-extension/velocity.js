@@ -63,9 +63,9 @@ function getPlatform(issue) {
 }
 
 function platformVelocity(velocityByIteration, platform) {
-    return velocityByIteration
+    const totalPoints = velocityByIteration
         .reduce((total, iteration) => total + iteration[platform], 0)
-        / velocityByIteration.length
+    return (totalPoints / velocityByIteration.length).toFixed(1)
 }
 
 function addToDOM(velocityByIteration) {
