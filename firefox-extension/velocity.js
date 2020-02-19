@@ -8,6 +8,11 @@ const sprintIds = [
     1422, // 31
 ]
 
+const APPLE = 'apple'
+const ANDROID = 'android'
+const WEB = 'web'
+const QA = 'qa'
+
 const baseURL = 'https://jira.willowtreeapps.com/rest'
 const apiURL = baseURL + '/api/latest'
 const agileURL = baseURL + '/agile/1.0'
@@ -49,10 +54,33 @@ function breakdownSprint(sprintId) {
 }
 
 function getPlatform(issue) {
-    if(isApple(issue)) { return 'iOS' }
-    else if(isAndroid(issue)) { return 'android' }
-    else if(isWeb(issue)) { return 'web' }
-    else { return 'qa' }
+    if(isApple(issue)) { return APPLE }
+    else if(isAndroid(issue)) { return ANDROID }
+    else if(isWeb(issue)) { return WEB }
+    else { return QA }
+}
+
+function platformVelocity(velocityByIteration, platform) {
+    return velocityByIteration
+        .reduce((total, iteration) => total + iteration[platform], 0)
+        / velocityByIteration.length
+}
+
+function addToDOM(velocityByIteration) {
+    const newDiv = document.createElement('div')
+    newDiv.id = 'velocity-helper'
+    newDiv.innerHTML = `
+        <div style="font-size: 18px; font-weight: bold;">
+            Velocity <i>(avg points / week for the last 4 sprints)</i>:
+            <span style="color: green;">Android - ${platformVelocity(velocityByIteration, ANDROID)}</span> |
+            <span style="color: red;">Apple - ${platformVelocity(velocityByIteration, APPLE)}</span> |
+            <span style="color: blue;">Web - ${platformVelocity(velocityByIteration, WEB)}</span> |
+            <span style="color: orange;">QA - ${platformVelocity(velocityByIteration, QA)}</span>
+        </div>
+    `
+
+    const pageContainer = document.getElementById('gh')
+    pageContainer.prepend(newDiv)
 }
 
 function figureOutVelocity() {
@@ -82,7 +110,7 @@ function figureOutVelocity() {
 
         const iterations = []
         for(i = 0; i < numberOfIterations; i++) {
-            iterations.push({ android: 0, iOS: 0, web: 0, qa: 0, issueIds: [] })
+            iterations.push({ [ANDROID]: 0, [APPLE]: 0, [WEB]: 0, [QA]: 0, issueIds: [] })
         }
 
         const velocityByIteration = dedupedIssues
@@ -95,75 +123,17 @@ function figureOutVelocity() {
             iterations)
         // console.log(velocityByIteration)
 
-        const decomposedTotalVelocity = velocityByIteration.reduce((total, iteration) => total + iteration.qa + iteration.android + iteration.iOS + iteration.web, 0)
+        const decomposedTotalVelocity = velocityByIteration.reduce((total, iteration) => total + iteration[QA] + iteration[ANDROID] + iteration[APPLE] + iteration[WEB], 0)
         if(decomposedTotalVelocity === initialTotalVelocity) {
-            console.log(`Android running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.android, 0) / numberOfIterations}`)
-            console.log(`iOS running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.iOS, 0) / numberOfIterations}`)
-            console.log(`Web running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.web, 0) / numberOfIterations}`)
-            console.log(`QA running velocity: ${velocityByIteration.reduce((total, iteration) => total + iteration.qa, 0) / numberOfIterations}`)
+            console.log(`Android running velocity: ${platformVelocity(velocityByIteration, ANDROID)}`)
+            console.log(`Apple running velocity: ${platformVelocity(velocityByIteration, APPLE)}`)
+            console.log(`Web running velocity: ${platformVelocity(velocityByIteration, WEB)}`)
+            console.log(`QA running velocity: ${platformVelocity(velocityByIteration, QA)}`)
+
+            addToDOM(velocityByIteration)
         } else {
             console.log(`Something went wrong! Our initial total velocity of ${initialTotalVelocity} wasn't reflected in the final calculation. Instead, we got ${decomposedTotalVelocity}`)
         }
     })
 }
 figureOutVelocity()
-
-
-// const velocityHelper = {
-//     init(rows) {
-//         this.issues = rows
-//         return this
-//     },
-
-//     letsFuckingGo() {
-//         const pointsByPlatform = this.issues
-//             .reduce((result, next) => {
-//                 const platforms = next.querySelector('.ghx-plan-extra-fields .ghx-extra-field:last-child').innerText
-//                 const estimate = next.querySelector('.ghx-estimate .ghx-statistic-badge').innerText
-
-//                 if(estimate.trim().length) {
-//                     if(platforms.includes("iOS") || platforms.includes("tvOS")) {
-//                         result.iOS += Number(estimate)
-//                     } else if(platforms.includes("Android") || platforms.includes("Amazon")) {
-//                         result.android += Number(estimate)
-//                     } else if(platforms.includes("Web")) {
-//                         result.web += Number(estimate)
-//                     }
-//                 }
-
-//                 return result
-//             }, {android: 0, iOS: 0, web: 0})
-        
-//         const badgeContainer = document.querySelector('.ghx-sprint-group .ghx-badge-group.ghx-right')
-//         badgeContainer.prepend(
-//             this.makeBadge(`android: ${pointsByPlatform.android}`),
-//             this.makeBadge(`ios: ${pointsByPlatform.iOS}`),
-//             this.makeBadge(`web: ${pointsByPlatform.web}`),
-//         )
-//     },
-
-//     makeBadge(str) {
-//         const badge = document.createElement('aui-badge')
-//         badge.innerText = str
-//         return badge
-//     }
-// }
-// function waitForJira() {
-//     let interval
-
-//     function stopLoop() {
-//         clearInterval(interval)
-//     }
-
-//     function startLoop() {
-//         interval = setInterval(() => {
-//             const rows = Array.from(document.querySelectorAll('.ghx-sprint-group [data-sprint-id="1422"] .js-issue'))
-//             if(rows.length) {
-//                 stopLoop()
-//                 velocityHelper.init(rows).letsFuckingGo()
-//             }
-//         }, 200)
-//     }
-//     startLoop()
-// }
-// waitForJira()
