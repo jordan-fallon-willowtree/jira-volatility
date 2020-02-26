@@ -32,7 +32,7 @@ function breakdownSprint(sprintId) {
         .then(data => {
             const validIssues = data.issues
                 .filter(issue => issue.fields.status.name == 'Done')
-                .filter(issue => issue.fields.customfield_10004)
+                .filter(issue => issue.fields[pointField])
                 .filter(issue => issue.fields.resolutiondate)
 
             issues.push(...validIssues)

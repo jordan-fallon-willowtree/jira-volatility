@@ -12,7 +12,7 @@
     "content_scripts": [
         {
             "matches": ["https://jira.willowtreeapps.com/*"],
-            "js": ["../build/firefox-extension/bundle.js"]
+            "js": ["bundle.js"]
         }
     ]
 }
