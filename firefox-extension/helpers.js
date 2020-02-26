@@ -14,15 +14,21 @@ function isWeb(issue) {
     return containsKeywords(issue, ['Web', 'chromecast'])
 }
 
+function isQA(issue) {
+    return containsKeywords(issue, ['QA', 'Automation'])
+}
+
 function containsKeywords(issue, keywords) {
     return issue.fields.components.some(com => keywords.includes(com.name))
 }
 
-function getPlatform(issue) {
-    if(isApple(issue)) { return APPLE }
-    else if(isAndroid(issue)) { return ANDROID }
-    else if(isWeb(issue)) { return WEB }
-    else { return QA }
+function getPlatforms(issue) {
+    const platforms = []
+    if(isApple(issue)) { platforms.push(APPLE) }
+    if(isAndroid(issue)) { platforms.push(ANDROID) }
+    if(isWeb(issue)) { platforms.push(WEB) }
+    if(isQA(issue)) { platforms.push(QA) }
+    return platforms
 }
 
 function filterOutInvalidIssues(issues) {
@@ -32,4 +38,4 @@ function filterOutInvalidIssues(issues) {
         .filter(issue => issue.fields.resolutiondate)
 }
 
-module.exports = { isApple, isAndroid, isWeb, getPlatform, filterOutInvalidIssues }
+module.exports = { isApple, isAndroid, isWeb, isQA, getPlatforms, filterOutInvalidIssues }

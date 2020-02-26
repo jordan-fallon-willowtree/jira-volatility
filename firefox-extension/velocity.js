@@ -1,4 +1,4 @@
-const { getPlatform, filterOutInvalidIssues } = require("./helpers.js")
+const { getPlatforms, filterOutInvalidIssues } = require("./helpers.js")
 const { getSprintIssues } = require("./jira-api.js")
 const { APPLE, ANDROID, WEB, QA } = require('./constants.js')
 
@@ -54,7 +54,7 @@ function figureOutVelocity() {
                     id: issue.id,
                     points: issue.fields.customfield_10004, 
                     done: new Date(issue.fields.resolutiondate),
-                    platform: getPlatform(issue)
+                    platforms: getPlatforms(issue)
                 }))
             .sort((a, b) => a.done > b.done)
         // console.log(dedupedIssues)
@@ -69,7 +69,7 @@ function figureOutVelocity() {
 
         const issuesInChosenSprints = dedupedIssues
             .filter(issue => issue.done < lastDateWeCareAbout)
-        const initialTotalVelocity = issuesInChosenSprints.reduce((total, issue) => total + issue.points, 0 )
+        const initialTotalVelocity = issuesInChosenSprints.reduce((total, issue) => total + issue.points * issue.platforms.length, 0)
 
         const iterations = []
         for(i = 0; i < numberOfIterations; i++) {
@@ -79,7 +79,7 @@ function figureOutVelocity() {
         const velocityByIteration = issuesInChosenSprints
             .reduce((result, issue) => {
                 const iterationIndex = Math.floor((issue.done - firstDate) / millisecondsPerWeek)
-                result[iterationIndex][issue.platform] += issue.points
+                issue.platforms.forEach(platform => result[iterationIndex][platform] += issue.points)
                 result[iterationIndex].issueIds.push(issue.id)
                 return result
             },
