@@ -1,4 +1,4 @@
-const { isApple, isAndroid, isWeb } = require("../firefox-extension/helpers.js")
+const { isApple, isAndroid, isWeb, filterOutInvalidIssues } = require("../firefox-extension/helpers.js")
 
 describe('helpers', () => {
     describe('isApple', () => {
@@ -64,6 +64,39 @@ describe('helpers', () => {
         it('returns false if there are no components', () => {
             const issue = { fields: { components: [] }}
             expect(isWeb(issue)).toBeFalse()
+        })
+    })
+
+    describe('filterOutInvalidIssues', () => {
+        it('filters out issues that are not Done', () => {
+            const inProgressIssue = { fields: { status: { name: 'In Progress' }, customfield_10004: 1, resolutiondate: '2019-01-01T14:25:20.000Z'  } }
+            const doneIssue = { fields: { status: { name: 'Done' }, customfield_10004: 1, resolutiondate: '2019-01-01T14:25:20.000Z'  } }
+            const inReviewIssue = { fields: { status: { name: 'In Review' }, customfield_10004: 1, resolutiondate: '2019-01-01T14:25:20.000Z'  } }
+
+            const validIssues = filterOutInvalidIssues([inProgressIssue, doneIssue, inReviewIssue])
+            expect(validIssues.length).toBe(1)
+            expect(validIssues[0]).toBe(doneIssue)
+        })
+
+        it('filters out issues that are not pointed', () => {
+            const pointedIssue = { fields: { status: { name: 'Done' }, customfield_10004: 3, resolutiondate: '2019-01-01T14:25:20.000Z'  } }
+            const nullPointsIssue = { fields: { status: { name: 'Done' }, customfield_10004: null, resolutiondate: '2019-01-01T14:25:20.000Z'  } }
+            const noPointsFieldIssue = { fields: { status: { name: 'Done' }, resolutiondate: '2019-01-01T14:25:20.000Z'  } }
+            const zeroPointsIssue = { fields: { status: { name: 'Done' }, customfield_10004: 0, resolutiondate: '2019-01-01T14:25:20.000Z' } }
+
+            const validIssues = filterOutInvalidIssues([pointedIssue, nullPointsIssue, noPointsFieldIssue, zeroPointsIssue])
+            expect(validIssues.length).toBe(1)
+            expect(validIssues[0]).toBe(pointedIssue)
+        })
+
+        it('filters out issues that do not have a resolution date', () => {
+            const nullDateIssue = { fields: { status: { name: 'Done' }, customfield_10004: 3, resolutiondate: null } }
+            const noDateIssue = { fields: { status: { name: 'Done' }, customfield_10004: 3 } }
+            const validIssue = { fields: { status: { name: 'Done' }, customfield_10004: 3, resolutiondate: '2019-01-01T14:25:20.000Z' } }
+
+            const validIssues = filterOutInvalidIssues([nullDateIssue, noDateIssue, validIssue])
+            expect(validIssues.length).toBe(1)
+            expect(validIssues[0]).toBe(validIssue)
         })
     })
 })

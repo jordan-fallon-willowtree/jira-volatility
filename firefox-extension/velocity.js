@@ -1,6 +1,6 @@
 const { isApple, isAndroid, isWeb } = require("./helpers.js")
+const { getSprintIssues } = require("./jira-api.js")
 
-const pointField = 'customfield_10004'
 const sprintIds = [
     // 1405, // 28
     1406, // 29
@@ -14,21 +14,9 @@ const ANDROID = 'android'
 const WEB = 'web'
 const QA = 'qa'
 
-const baseURL = 'https://jira.willowtreeapps.com/rest'
-const apiURL = baseURL + '/api/latest'
-const agileURL = baseURL + '/agile/1.0'
-
-function getSprints() {
-    fetch(`${agileURL}/board/309/sprint?startAt=100`)
-        .then(res => res.json())
-        .then(data => console.log(data.values.map(sprint => ({id: sprint.id, name: sprint.name}))))
-}
-// getSprints()
-
 const issues = []
 function breakdownSprint(sprintId) {
-    return fetch(`${agileURL}/board/309/sprint/${sprintId}/issue`)
-        .then(res => res.json())
+    return getSprintIssues(sprintId)
         .then(data => {
             const validIssues = data.issues
                 .filter(issue => issue.fields.status.name == 'Done')

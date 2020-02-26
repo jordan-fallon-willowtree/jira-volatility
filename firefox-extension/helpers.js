@@ -1,3 +1,5 @@
+const pointField = 'customfield_10004'
+
 function isApple(issue) {
     return containsKeywords(issue, ['iOS', 'tvOS'])
 }
@@ -14,4 +16,11 @@ function containsKeywords(issue, keywords) {
     return issue.fields.components.some(com => keywords.includes(com.name))
 }
 
-module.exports = { isApple, isAndroid, isWeb }
+function filterOutInvalidIssues(issues) {
+    return issues
+        .filter(issue => issue.fields.status.name == 'Done')
+        .filter(issue => issue.fields[pointField])
+        .filter(issue => issue.fields.resolutiondate)
+}
+
+module.exports = { isApple, isAndroid, isWeb, filterOutInvalidIssues }
