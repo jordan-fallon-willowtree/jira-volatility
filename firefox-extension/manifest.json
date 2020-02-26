@@ -1,9 +1,9 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Jira Volatility",
     "version": "2.0",
 
-    "description": "Makes the velocity chart in Jira actually useful for forecasting",
+    "description": "Calculates some agile metrics and displays on the Jira dashboard",
 
     "icons": {
         "48": "../volatility.png"
@@ -11,12 +11,8 @@
 
     "content_scripts": [
         {
-            "matches": ["https://jira.willowtreeapps.com/*chart=velocityChart"],
-            "js": ["volatility.js"]
-        },
-        {
             "matches": ["https://jira.willowtreeapps.com/*"],
-            "js": ["velocity.js"]
+            "js": ["extension.js"]
         }
     ]
 }

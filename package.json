@@ -1,0 +1,28 @@
+{
+  "name": "jira-volatility",
+  "version": "1.0.0",
+  "description": "There are some common helpful iteration metrics that are missing from Jira's velocity chart. This browser extension adds them to the page and explains their use.",
+  "main": "extension.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "jasmine": "^3.5.0"
+  },
+  "devDependencies": {
+    "jasmine": "^3.5.0"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jordan-fallon-willowtree/jira-volatility.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jordan-fallon-willowtree/jira-volatility/issues"
+  },
+  "homepage": "https://github.com/jordan-fallon-willowtree/jira-volatility#readme"
+}

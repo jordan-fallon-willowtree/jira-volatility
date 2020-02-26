@@ -85,7 +85,7 @@ function addToDOM(velocityByIteration) {
     pageContainer.prepend(newDiv)
 }
 
-function figureOutVelocity() {
+export function figureOutVelocity() {
     // getSprints()
     const promises = []
     sprintIds.forEach(sprintId => {
@@ -143,4 +143,3 @@ function figureOutVelocity() {
         }
     })
 }
-figureOutVelocity()
