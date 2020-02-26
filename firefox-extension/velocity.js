@@ -13,9 +13,16 @@ const sprintIds = [
 const issues = []
 function breakdownSprint(sprintId) {
     return getSprintIssues(sprintId)
-        .then(data => {
-            issues.push(...filterOutInvalidIssues(data.issues))
-        })
+        .then(data => filterOutInvalidIssues(data.issues))
+}
+
+function getAllValidIssues(callback) {
+    return Promise
+        .all(sprintIds.map(sprintId => breakdownSprint(sprintId)))
+        .then(issues => callback(issues.reduce((result, next) => {
+            result.push(...next)
+            return result
+        }, [])))
 }
 
 function platformVelocity(velocityByIteration, platform) {
@@ -30,10 +37,10 @@ function addToDOM(velocityByIteration) {
     newDiv.innerHTML = `
         <div style="font-size: 18px; font-weight: bold;">
             Velocity <i>(avg points / week for the last 4 sprints)</i>:
-            <span style="color: green;">Android - ${platformVelocity(velocityByIteration, ANDROID)}</span> |
-            <span style="color: red;">Apple - ${platformVelocity(velocityByIteration, APPLE)}</span> |
-            <span style="color: blue;">Web - ${platformVelocity(velocityByIteration, WEB)}</span> |
-            <span style="color: orange;">QA - ${platformVelocity(velocityByIteration, QA)}</span>
+            <span style="color: #A4C639;">Android - ${platformVelocity(velocityByIteration, ANDROID)}</span> |
+            <span style="color: #7D7D7D;">Apple - ${platformVelocity(velocityByIteration, APPLE)}</span> |
+            <span style="color: #007ACC;">Web - ${platformVelocity(velocityByIteration, WEB)}</span> |
+            <span style="color: #009800;">QA - ${platformVelocity(velocityByIteration, QA)}</span>
         </div>
     `
 
@@ -42,12 +49,8 @@ function addToDOM(velocityByIteration) {
 }
 
 function figureOutVelocity() {
-    // getSprints()
-    const promises = []
-    sprintIds.forEach(sprintId => {
-        promises.push(breakdownSprint(sprintId))
-    })
-    Promise.all(promises).then(() => {
+    getAllValidIssues(issues => {
+        console.log(issues)
         const dedupedIssues = issues
             .filter((issue, index, self) => self.findIndex(i => i.id === issue.id) === index)
             .map(issue => ({
