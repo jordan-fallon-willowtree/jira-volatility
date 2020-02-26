@@ -1,5 +1,6 @@
-const { isApple, isAndroid, isWeb, filterOutInvalidIssues } = require("./helpers.js")
+const { getPlatform, filterOutInvalidIssues } = require("./helpers.js")
 const { getSprintIssues } = require("./jira-api.js")
+const { APPLE, ANDROID, WEB, QA } = require('./constants.js')
 
 const sprintIds = [
     // 1405, // 28
@@ -9,24 +10,12 @@ const sprintIds = [
     1424, // 32
 ]
 
-const APPLE = 'apple'
-const ANDROID = 'android'
-const WEB = 'web'
-const QA = 'qa'
-
 const issues = []
 function breakdownSprint(sprintId) {
     return getSprintIssues(sprintId)
         .then(data => {
             issues.push(...filterOutInvalidIssues(data.issues))
         })
-}
-
-function getPlatform(issue) {
-    if(isApple(issue)) { return APPLE }
-    else if(isAndroid(issue)) { return ANDROID }
-    else if(isWeb(issue)) { return WEB }
-    else { return QA }
 }
 
 function platformVelocity(velocityByIteration, platform) {

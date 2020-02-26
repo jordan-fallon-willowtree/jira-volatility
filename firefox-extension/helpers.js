@@ -1,3 +1,5 @@
+const { APPLE, ANDROID, WEB, QA } = require('./constants.js')
+
 const pointField = 'customfield_10004'
 
 function isApple(issue) {
@@ -16,6 +18,13 @@ function containsKeywords(issue, keywords) {
     return issue.fields.components.some(com => keywords.includes(com.name))
 }
 
+function getPlatform(issue) {
+    if(isApple(issue)) { return APPLE }
+    else if(isAndroid(issue)) { return ANDROID }
+    else if(isWeb(issue)) { return WEB }
+    else { return QA }
+}
+
 function filterOutInvalidIssues(issues) {
     return issues
         .filter(issue => issue.fields.status.name == 'Done')
@@ -23,4 +32,4 @@ function filterOutInvalidIssues(issues) {
         .filter(issue => issue.fields.resolutiondate)
 }
 
-module.exports = { isApple, isAndroid, isWeb, filterOutInvalidIssues }
+module.exports = { isApple, isAndroid, isWeb, getPlatform, filterOutInvalidIssues }

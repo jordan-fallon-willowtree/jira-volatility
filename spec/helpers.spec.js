@@ -1,4 +1,5 @@
-const { isApple, isAndroid, isWeb, filterOutInvalidIssues } = require("../firefox-extension/helpers.js")
+const { isApple, isAndroid, isWeb, getPlatform, filterOutInvalidIssues } = require("../firefox-extension/helpers.js")
+const { APPLE, ANDROID, WEB, QA } = require('../firefox-extension/constants.js')
 
 describe('helpers', () => {
     describe('isApple', () => {
@@ -64,6 +65,28 @@ describe('helpers', () => {
         it('returns false if there are no components', () => {
             const issue = { fields: { components: [] }}
             expect(isWeb(issue)).toBeFalse()
+        })
+    })
+
+    describe('getPlatform', () => {
+        it('can find Apple platforms', () => {
+            expect(getPlatform({ fields: { components: [{name: 'iOS'}] } })).toBe(APPLE)
+            expect(getPlatform({ fields: { components: [{name: 'tvOS'}] } })).toBe(APPLE)
+        })
+
+        it('can find Android platforms', () => {
+            expect(getPlatform({ fields: { components: [{name: 'Android'}] } })).toBe(ANDROID)
+            expect(getPlatform({ fields: { components: [{name: 'Android TV'}] } })).toBe(ANDROID)
+            expect(getPlatform({ fields: { components: [{name: 'Amazon Fire TV'}] } })).toBe(ANDROID)
+        })
+
+        it('can find web platforms', () => {
+            expect(getPlatform({ fields: { components: [{name: 'Web'}] } })).toBe(WEB)
+        })
+
+        it('can find QA platforms', () => {
+            expect(getPlatform({ fields: { components: [{name: 'QA'}] } })).toBe(QA)
+            expect(getPlatform({ fields: { components: [{name: 'Automation'}] } })).toBe(QA)
         })
     })
 
