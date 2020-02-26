@@ -57,7 +57,12 @@ describe('helpers', () => {
             expect(isWeb(issue)).toBeTrue()
         })
 
-        it('returns false if there is no Web component', () => {
+        it('returns true if a component is named chromecast', () => {
+            const issue = { fields: { components: [{ name: 'chromecast' }] }}
+            expect(isWeb(issue)).toBeTrue()
+        })
+
+        it('returns false if there is no Web or chromecast component', () => {
             const issue = { fields: { components: [{ name: 'Android' }] }}
             expect(isWeb(issue)).toBeFalse()
         })
@@ -74,12 +79,12 @@ describe('helpers', () => {
             expect(isQA(issue)).toBeTrue()
         })
 
-        it('returns true if a component is named Automation', () => {
-            const issue = { fields: { components: [{ name: 'Automation' }] }}
+        it('returns true if a component is named TE', () => {
+            const issue = { fields: { components: [{ name: 'TE' }] }}
             expect(isQA(issue)).toBeTrue()
         })
 
-        it('returns false if there is no QA or Automation component', () => {
+        it('returns false if there is no QA or TE component', () => {
             const issue = { fields: { components: [{ name: 'Android' }] }}
             expect(isQA(issue)).toBeFalse()
         })
@@ -108,7 +113,7 @@ describe('helpers', () => {
 
         it('can find QA platforms', () => {
             expect(getPlatforms({ fields: { components: [{name: 'QA'}] } })).toEqual([QA])
-            expect(getPlatforms({ fields: { components: [{name: 'Automation'}] } })).toEqual([QA])
+            expect(getPlatforms({ fields: { components: [{name: 'TE'}] } })).toEqual([QA])
         })
 
         it('can find multiple platforms, but only once each', () => {

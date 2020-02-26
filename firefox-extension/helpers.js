@@ -15,7 +15,7 @@ function isWeb(issue) {
 }
 
 function isQA(issue) {
-    return containsKeywords(issue, ['QA', 'Automation'])
+    return containsKeywords(issue, ['QA', 'TE'])
 }
 
 function containsKeywords(issue, keywords) {
