@@ -1,4 +1,4 @@
-const { isApple, isAndroid, isWeb } = require("./helpers.js")
+const { isApple, isAndroid, isWeb, filterOutInvalidIssues } = require("./helpers.js")
 const { getSprintIssues } = require("./jira-api.js")
 
 const sprintIds = [
@@ -18,12 +18,7 @@ const issues = []
 function breakdownSprint(sprintId) {
     return getSprintIssues(sprintId)
         .then(data => {
-            const validIssues = data.issues
-                .filter(issue => issue.fields.status.name == 'Done')
-                .filter(issue => issue.fields[pointField])
-                .filter(issue => issue.fields.resolutiondate)
-
-            issues.push(...validIssues)
+            issues.push(...filterOutInvalidIssues(data.issues))
         })
 }
 
