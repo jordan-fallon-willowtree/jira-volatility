@@ -1,6 +1,6 @@
 const { getPlatforms, filterOutInvalidIssues } = require("./helpers.js")
 const { getSprintIssues } = require("./jira-api.js")
-const { APPLE, ANDROID, WEB, QA } = require('./constants.js')
+const { APPLE, ANDROID, WEB, TE } = require('./constants.js')
 
 const sprintIds = [
     // 1405, // 28
@@ -40,7 +40,7 @@ function addToDOM(velocityByIteration) {
             <span style="color: #A4C639;">Android - ${platformVelocity(velocityByIteration, ANDROID)}</span> |
             <span style="color: #7D7D7D;">Apple - ${platformVelocity(velocityByIteration, APPLE)}</span> |
             <span style="color: #007ACC;">Web - ${platformVelocity(velocityByIteration, WEB)}</span> |
-            <span style="color: #009800;">QA - ${platformVelocity(velocityByIteration, QA)}</span>
+            <span style="color: #009800;">TE - ${platformVelocity(velocityByIteration, TE)}</span>
         </div>
     `
 
@@ -76,7 +76,7 @@ function figureOutVelocity() {
 
         const iterations = []
         for(i = 0; i < numberOfIterations; i++) {
-            iterations.push({ [ANDROID]: 0, [APPLE]: 0, [WEB]: 0, [QA]: 0, issueIds: [] })
+            iterations.push({ [ANDROID]: 0, [APPLE]: 0, [WEB]: 0, [TE]: 0, issueIds: [] })
         }
 
         const velocityByIteration = issuesInChosenSprints
@@ -89,12 +89,12 @@ function figureOutVelocity() {
             iterations)
         // console.log(velocityByIteration)
 
-        const decomposedTotalVelocity = velocityByIteration.reduce((total, iteration) => total + iteration[QA] + iteration[ANDROID] + iteration[APPLE] + iteration[WEB], 0)
+        const decomposedTotalVelocity = velocityByIteration.reduce((total, iteration) => total + iteration[TE] + iteration[ANDROID] + iteration[APPLE] + iteration[WEB], 0)
         if(decomposedTotalVelocity === initialTotalVelocity) {
             console.log(`Android running velocity: ${platformVelocity(velocityByIteration, ANDROID)}`)
             console.log(`Apple running velocity: ${platformVelocity(velocityByIteration, APPLE)}`)
             console.log(`Web running velocity: ${platformVelocity(velocityByIteration, WEB)}`)
-            console.log(`QA running velocity: ${platformVelocity(velocityByIteration, QA)}`)
+            console.log(`TE running velocity: ${platformVelocity(velocityByIteration, TE)}`)
 
             addToDOM(velocityByIteration)
         } else {

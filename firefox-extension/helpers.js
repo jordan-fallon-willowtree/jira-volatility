@@ -1,4 +1,4 @@
-const { APPLE, ANDROID, WEB, QA } = require('./constants.js')
+const { APPLE, ANDROID, WEB, TE } = require('./constants.js')
 
 const pointField = 'customfield_10004'
 
@@ -14,7 +14,7 @@ function isWeb(issue) {
     return containsKeywords(issue, ['Web', 'chromecast'])
 }
 
-function isQA(issue) {
+function isTE(issue) {
     return containsKeywords(issue, ['QA', 'TE'])
 }
 
@@ -27,7 +27,7 @@ function getPlatforms(issue) {
     if(isApple(issue)) { platforms.push(APPLE) }
     if(isAndroid(issue)) { platforms.push(ANDROID) }
     if(isWeb(issue)) { platforms.push(WEB) }
-    if(isQA(issue)) { platforms.push(QA) }
+    if(isTE(issue)) { platforms.push(TE) }
     return platforms
 }
 
@@ -38,4 +38,4 @@ function filterOutInvalidIssues(issues) {
         .filter(issue => issue.fields.resolutiondate)
 }
 
-module.exports = { isApple, isAndroid, isWeb, isQA, getPlatforms, filterOutInvalidIssues }
+module.exports = { isApple, isAndroid, isWeb, isTE, getPlatforms, filterOutInvalidIssues }

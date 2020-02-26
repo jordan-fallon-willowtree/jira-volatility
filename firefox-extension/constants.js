@@ -1,6 +1,6 @@
 const APPLE = 'apple'
 const ANDROID = 'android'
 const WEB = 'web'
-const QA = 'qa'
+const TE = 'te'
 
-module.exports = { APPLE, ANDROID, WEB, QA }
+module.exports = { APPLE, ANDROID, WEB, TE }

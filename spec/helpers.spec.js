@@ -1,5 +1,5 @@
-const { isApple, isAndroid, isWeb, isQA, getPlatforms, filterOutInvalidIssues } = require("../firefox-extension/helpers.js")
-const { APPLE, ANDROID, WEB, QA } = require('../firefox-extension/constants.js')
+const { isApple, isAndroid, isWeb, isTE, getPlatforms, filterOutInvalidIssues } = require("../firefox-extension/helpers.js")
+const { APPLE, ANDROID, WEB, TE } = require('../firefox-extension/constants.js')
 
 describe('helpers', () => {
     describe('isApple', () => {
@@ -36,7 +36,7 @@ describe('helpers', () => {
         })
 
         it('returns true if a component is named Amazon Fire TV', () => {
-            const issue = { fields: { components: [{ name: 'Amazon Fire TV' }, { name: 'QA' }] }}
+            const issue = { fields: { components: [{ name: 'Amazon Fire TV' }, { name: 'TE' }] }}
             expect(isAndroid(issue)).toBeTrue()
         })
 
@@ -73,25 +73,25 @@ describe('helpers', () => {
         })
     })
 
-    describe('isQA', () => {
+    describe('isTE', () => {
         it('returns true if a component is named QA', () => {
             const issue = { fields: { components: [{ name: 'QA' }] }}
-            expect(isQA(issue)).toBeTrue()
+            expect(isTE(issue)).toBeTrue()
         })
 
         it('returns true if a component is named TE', () => {
             const issue = { fields: { components: [{ name: 'TE' }] }}
-            expect(isQA(issue)).toBeTrue()
+            expect(isTE(issue)).toBeTrue()
         })
 
         it('returns false if there is no QA or TE component', () => {
             const issue = { fields: { components: [{ name: 'Android' }] }}
-            expect(isQA(issue)).toBeFalse()
+            expect(isTE(issue)).toBeFalse()
         })
 
         it('returns false if there are no components', () => {
             const issue = { fields: { components: [] }}
-            expect(isQA(issue)).toBeFalse()
+            expect(isTE(issue)).toBeFalse()
         })
     })
 
@@ -111,13 +111,13 @@ describe('helpers', () => {
             expect(getPlatforms({ fields: { components: [{name: 'Web'}] } })).toEqual([WEB])
         })
 
-        it('can find QA platforms', () => {
-            expect(getPlatforms({ fields: { components: [{name: 'QA'}] } })).toEqual([QA])
-            expect(getPlatforms({ fields: { components: [{name: 'TE'}] } })).toEqual([QA])
+        it('can find TE platforms', () => {
+            expect(getPlatforms({ fields: { components: [{name: 'QA'}] } })).toEqual([TE])
+            expect(getPlatforms({ fields: { components: [{name: 'TE'}] } })).toEqual([TE])
         })
 
         it('can find multiple platforms, but only once each', () => {
-            expect(getPlatforms({ fields: { components: [{name: 'QA'}, {name: 'Web'}] } })).toEqual([WEB, QA])
+            expect(getPlatforms({ fields: { components: [{name: 'QA'}, {name: 'Web'}] } })).toEqual([WEB, TE])
             expect(getPlatforms({ fields: { components: [{name: 'Android TV'}, {name: 'Amazon Fire TV'}, {name: 'iOS'}, {name: 'tvOS'}] } })).toEqual([APPLE, ANDROID])
         })
 
