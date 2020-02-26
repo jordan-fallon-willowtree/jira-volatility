@@ -1,3 +1,5 @@
+const { isApple, isAndroid, isWeb } = require("helpers.js")
+
 console.log('Jira velocity loaded! 🐧')
 
 const pointField = 'customfield_10004'
@@ -17,22 +19,6 @@ const QA = 'qa'
 const baseURL = 'https://jira.willowtreeapps.com/rest'
 const apiURL = baseURL + '/api/latest'
 const agileURL = baseURL + '/agile/1.0'
-
-function isApple(issue) {
-    return containsKeywords(issue, ['iOS', 'tvOS'])
-}
-
-function isAndroid(issue) {
-    return containsKeywords(issue, ['Android', 'Android TV', 'Amazon Fire TV'])
-}
-
-function isWeb(issue) {
-    return containsKeywords(issue, ['Web', 'chromecast'])
-}
-
-function containsKeywords(issue, keywords) {
-    return issue.fields.components.some(com => keywords.includes(com.name))
-}
 
 function getSprints() {
     fetch(`${agileURL}/board/309/sprint?startAt=100`)
@@ -85,7 +71,7 @@ function addToDOM(velocityByIteration) {
     pageContainer.prepend(newDiv)
 }
 
-export function figureOutVelocity() {
+function figureOutVelocity() {
     // getSprints()
     const promises = []
     sprintIds.forEach(sprintId => {
