@@ -1,6 +1,4 @@
-const { isApple, isAndroid, isWeb } = require("helpers.js")
-
-console.log('Jira velocity loaded! 🐧')
+const { isApple, isAndroid, isWeb } = require("./helpers.js")
 
 const pointField = 'customfield_10004'
 const sprintIds = [
@@ -129,3 +127,5 @@ function figureOutVelocity() {
         }
     })
 }
+
+module.exports = { figureOutVelocity }

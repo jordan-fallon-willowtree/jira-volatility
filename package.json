@@ -10,10 +10,13 @@
     "jasmine": "^3.5.0"
   },
   "devDependencies": {
-    "jasmine": "^3.5.0"
+    "browserify": "^16.5.0",
+    "jasmine": "^3.5.0",
+    "uniq": "^1.0.1"
   },
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "bundle": "browserify firefox-extension/extension.js -o build/firefox-extension/bundle.js"
   },
   "repository": {
     "type": "git",
