@@ -10,19 +10,31 @@ const sprintIds = [
     1424, // 32
 ]
 
-const issues = []
-function breakdownSprint(sprintId) {
-    return getSprintIssues(sprintId)
-        .then(data => filterOutInvalidIssues(data.issues))
+function getValidSortedDedupedIssues(callback) {
+    getIssuesForSprints(issues => {
+        callback(issues
+            .then(filterOutInvalidIssues)
+            .filter((issue, index, self) => self.findIndex(i => i.id === issue.id) === index)
+            .map(issue => ({
+                    id: issue.id,
+                    points: issue.fields.customfield_10004, 
+                    done: new Date(issue.fields.resolutiondate),
+                    platforms: getPlatforms(issue)
+                }))
+            .sort((a, b) => a.done > b.done))
+    })
 }
 
-function getAllValidIssues(callback) {
+function getIssuesForSprints(callback) {
     return Promise
-        .all(sprintIds.map(sprintId => breakdownSprint(sprintId)))
-        .then(issues => callback(issues.reduce((result, next) => {
-            result.push(...next)
-            return result
-        }, [])))
+        .all(sprintIds.map(getSprintIssues))
+        .then(data => {
+            const flattenedIssues = data.reduce((result, next) => {
+                result.push(...next.issues)
+                return result
+            }, [])
+            callback(flattenedIssues)
+        })
 }
 
 function platformVelocity(velocityByIteration, platform) {
@@ -49,18 +61,7 @@ function addToDOM(velocityByIteration) {
 }
 
 function figureOutVelocity() {
-    getAllValidIssues(issues => {
-        console.log(issues)
-        const dedupedIssues = issues
-            .filter((issue, index, self) => self.findIndex(i => i.id === issue.id) === index)
-            .map(issue => ({
-                    id: issue.id,
-                    points: issue.fields.customfield_10004, 
-                    done: new Date(issue.fields.resolutiondate),
-                    platforms: getPlatforms(issue)
-                }))
-            .sort((a, b) => a.done > b.done)
-        // console.log(dedupedIssues)
+    getValidSortedDedupedIssues(dedupedIssues => {
         const firstDate = dedupedIssues[0].done
         const lastDate = dedupedIssues[dedupedIssues.length - 1].done
         const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7
