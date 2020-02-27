@@ -12,16 +12,21 @@ const sprintIds = [
 
 function getValidSortedDedupedIssues(callback) {
     getIssuesForSprints(issues => {
-        callback(issues
-            .then(filterOutInvalidIssues)
-            .map(issue => ({
-                    id: issue.id,
-                    points: issue.fields.customfield_10004, 
-                    done: new Date(issue.fields.resolutiondate),
-                    platforms: getPlatforms(issue)
-                }))
-            .sort((a, b) => a.done > b.done))
+        const mappedSortedFilteredIssues = filterOutInvalidIssues(issues)
+            .map(simplifyIssue)
+            .sort((a, b) => a.done > b.done)
+
+        callback(mappedSortedFilteredIssues)
     })
+}
+
+function simplifyIssue(issue) {
+    return {
+        id: issue.id,
+        points: issue.fields.customfield_10004,
+        done: new Date(issue.fields.resolutiondate),
+        platforms: getPlatforms(issue)
+    }
 }
 
 function getIssuesForSprints(callback) {
@@ -60,9 +65,9 @@ function addToDOM(velocityByIteration) {
 }
 
 function figureOutVelocity() {
-    getValidSortedDedupedIssues(dedupedIssues => {
-        const firstDate = dedupedIssues[0].done
-        const lastDate = dedupedIssues[dedupedIssues.length - 1].done
+    getValidSortedDedupedIssues(issues => {
+        const firstDate = issues[0].done
+        const lastDate = issues[issues.length - 1].done
         const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7
         const numberOfIterations = Math.floor((lastDate - firstDate) / millisecondsPerWeek)
         // console.log(`number of iterations: ${ numberOfIterations }`)
@@ -70,7 +75,7 @@ function figureOutVelocity() {
         const lastDateWeCareAbout = new Date(firstDate)
         lastDateWeCareAbout.setDate(lastDateWeCareAbout.getDate() + numberOfIterations * 7)
 
-        const issuesInChosenSprints = dedupedIssues
+        const issuesInChosenSprints = issues
             .filter(issue => issue.done < lastDateWeCareAbout)
         const initialTotalVelocity = issuesInChosenSprints.reduce((total, issue) => total + issue.points * issue.platforms.length, 0)
 
