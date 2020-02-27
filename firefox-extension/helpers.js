@@ -36,6 +36,7 @@ function filterOutInvalidIssues(issues) {
         .filter(issue => issue.fields.status.name == 'Done')
         .filter(issue => issue.fields[pointField])
         .filter(issue => issue.fields.resolutiondate)
+        .filter((issue, index, self) => self.findIndex(i => i.id === issue.id) === index)
 }
 
 module.exports = { isApple, isAndroid, isWeb, isTE, getPlatforms, filterOutInvalidIssues }

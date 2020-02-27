@@ -156,17 +156,31 @@ describe('helpers', () => {
             expect(validIssues.length).toBe(1)
             expect(validIssues[0]).toBe(validIssue)
         })
+
+        it('dedups the issues', () => {
+            const issue1 = issueWithId("id1")
+            const issue2 = issueWithId("id2")
+            const issue3 = issueWithId("id3")
+
+            const validIssues = filterOutInvalidIssues([issue1, issue3, issue2, issue3, issue1])
+            expect(validIssues.length).toBe(3)
+            expect(validIssues).toEqual([issue1, issue3, issue2])
+        })
     })
 
     function issueWithStatus(status) {
-        return { fields: { status: { name: status }, customfield_10004: 1, resolutiondate: '2019-01-01T14:25:20.000Z' } }
+        return { id: String(Math.random()), fields: { status: { name: status }, customfield_10004: 1, resolutiondate: '2019-01-01T14:25:20.000Z' } }
     }
 
     function issueWithPoints(points) {
-        return { fields: { status: { name: 'Done' }, customfield_10004: points, resolutiondate: '2019-01-01T14:25:20.000Z' } }
+        return { id: String(Math.random()), fields: { status: { name: 'Done' }, customfield_10004: points, resolutiondate: '2019-01-01T14:25:20.000Z' } }
     }
 
     function issueWithResolutionDate(date) {
-        return { fields: { status: { name: 'Done' }, customfield_10004: 1, resolutiondate: date } }
+        return { id: String(Math.random()), fields: { status: { name: 'Done' }, customfield_10004: 1, resolutiondate: date } }
+    }
+
+    function issueWithId(id) {
+        return { id: id, fields: { status: { name: 'Done' }, customfield_10004: 1, resolutiondate: '2019-01-01T14:25:20.000Z' } }
     }
 })

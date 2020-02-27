@@ -14,7 +14,6 @@ function getValidSortedDedupedIssues(callback) {
     getIssuesForSprints(issues => {
         callback(issues
             .then(filterOutInvalidIssues)
-            .filter((issue, index, self) => self.findIndex(i => i.id === issue.id) === index)
             .map(issue => ({
                     id: issue.id,
                     points: issue.fields.customfield_10004, 
