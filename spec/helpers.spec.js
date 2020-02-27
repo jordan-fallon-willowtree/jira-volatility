@@ -1,5 +1,6 @@
-const { isApple, isAndroid, isWeb, isTE, getPlatforms, filterOutInvalidIssues } = require("../firefox-extension/helpers.js")
+const { isApple, isAndroid, isWeb, isTE, getPlatforms, filterOutInvalidIssues } = require('../firefox-extension/helpers.js')
 const { APPLE, ANDROID, WEB, TE } = require('../firefox-extension/constants.js')
+const { issueWithId, issueWithResolutionDate, issueWithPoints, issueWithStatus } = require('./support/spec-helpers.js')
 
 describe('helpers', () => {
     describe('isApple', () => {
@@ -167,20 +168,4 @@ describe('helpers', () => {
             expect(validIssues).toEqual([issue1, issue3, issue2])
         })
     })
-
-    function issueWithStatus(status) {
-        return { id: String(Math.random()), fields: { status: { name: status }, customfield_10004: 1, resolutiondate: '2019-01-01T14:25:20.000Z' } }
-    }
-
-    function issueWithPoints(points) {
-        return { id: String(Math.random()), fields: { status: { name: 'Done' }, customfield_10004: points, resolutiondate: '2019-01-01T14:25:20.000Z' } }
-    }
-
-    function issueWithResolutionDate(date) {
-        return { id: String(Math.random()), fields: { status: { name: 'Done' }, customfield_10004: 1, resolutiondate: date } }
-    }
-
-    function issueWithId(id) {
-        return { id: id, fields: { status: { name: 'Done' }, customfield_10004: 1, resolutiondate: '2019-01-01T14:25:20.000Z' } }
-    }
 })

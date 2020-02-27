@@ -1,7 +1,7 @@
 const { filterOutInvalidIssues } = require('./helpers.js')
-const { simplifyIssue } = require('./issue-transformers.js')
+const { issueData, simplifyIssue } = require('./issue-transformers.js')
 const { getSprintIssues } = require('./jira-api.js')
-const { APPLE, ANDROID, WEB, TE } = require('./constants.js')
+const { APPLE, ANDROID, WEB, TE, MILLISECONDS_PER_WEEK } = require('./constants.js')
 
 const sprintIds = [
     // 1405, // 28
@@ -11,27 +11,13 @@ const sprintIds = [
     1424, // 32
 ]
 
-const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7
-
 function getValidSortedDedupedIssues(callback) {
     getIssuesForSprints(issues => {
         const mappedSortedFilteredIssues = filterOutInvalidIssues(issues)
             .map(simplifyIssue)
             .sort((a, b) => a.done > b.done)
 
-        const firstDate = mappedSortedFilteredIssues[0].done
-        const lastDate = mappedSortedFilteredIssues[mappedSortedFilteredIssues.length - 1].done
-        const iterationCount = numberOfFullIterations(firstDate, lastDate)
-
-        const lastDateWeCareAbout = new Date(firstDate)
-        lastDateWeCareAbout.setDate(lastDateWeCareAbout.getDate() + iterationCount * 7)
-
-        callback({
-            issues: mappedSortedFilteredIssues,
-            firstDate,
-            lastDateWeCareAbout,
-            numberOfFullIterations: iterationCount
-        })
+        callback(issueData(mappedSortedFilteredIssues))
     })
 }
 
@@ -45,10 +31,6 @@ function getIssuesForSprints(callback) {
             }, [])
             callback(flattenedIssues)
         })
-}
-
-function numberOfFullIterations(firstDate, lastDate) {
-    return Math.floor((lastDate - firstDate) / millisecondsPerWeek)
 }
 
 function addToDOM(velocityByIteration) {
@@ -87,7 +69,7 @@ function figureOutVelocity() {
 
         const velocityByIteration = issuesInChosenSprints
             .reduce((result, issue) => {
-                const iterationIndex = Math.floor((issue.done - data.firstDate) / millisecondsPerWeek)
+                const iterationIndex = Math.floor((issue.done - data.firstDate) / MILLISECONDS_PER_WEEK)
                 issue.platforms.forEach(platform => result[iterationIndex][platform] += issue.points)
                 result[iterationIndex].issueIds.push(issue.id)
                 return result

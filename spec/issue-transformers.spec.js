@@ -1,5 +1,6 @@
 const { APPLE, ANDROID } = require('../firefox-extension/constants.js')
-const { simplifyIssue } = require('../firefox-extension/issue-transformers.js')
+const { simplifyIssue, issueData } = require('../firefox-extension/issue-transformers.js')
+const { issueWithId, issueWithResolutionDate } = require('./support/spec-helpers.js')
 
 describe('Issue transformers', () => {
     describe('simplifyIssue', () => {
@@ -23,6 +24,14 @@ describe('Issue transformers', () => {
             expect(result.points).toBe(3)
             expect(result.done).toEqual(new Date(dateString))
             expect(result.platforms).toEqual([APPLE, ANDROID])
+        })
+    })
+
+    describe('issueData', () => {
+        it('returns the list of issues', () => {
+            const issues = [issueWithId(4), issueWithId(5)]
+            const data = issueData(issues)
+            expect(data.issues).toBe(issues)
         })
     })
 })
