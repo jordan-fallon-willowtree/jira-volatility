@@ -1,5 +1,6 @@
-const { getPlatforms, filterOutInvalidIssues } = require("./helpers.js")
-const { getSprintIssues } = require("./jira-api.js")
+const { filterOutInvalidIssues } = require('./helpers.js')
+const { simplifyIssue } = require('./issue-transformers.js')
+const { getSprintIssues } = require('./jira-api.js')
 const { APPLE, ANDROID, WEB, TE } = require('./constants.js')
 
 const sprintIds = [
@@ -44,15 +45,6 @@ function getIssuesForSprints(callback) {
             }, [])
             callback(flattenedIssues)
         })
-}
-
-function simplifyIssue(issue) {
-    return {
-        id: issue.id,
-        points: issue.fields.customfield_10004,
-        done: new Date(issue.fields.resolutiondate),
-        platforms: getPlatforms(issue)
-    }
 }
 
 function numberOfFullIterations(firstDate, lastDate) {
