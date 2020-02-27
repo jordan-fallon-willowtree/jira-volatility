@@ -10,23 +10,28 @@ const sprintIds = [
     1424, // 32
 ]
 
+const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7
+
 function getValidSortedDedupedIssues(callback) {
     getIssuesForSprints(issues => {
         const mappedSortedFilteredIssues = filterOutInvalidIssues(issues)
             .map(simplifyIssue)
             .sort((a, b) => a.done > b.done)
 
-        callback(mappedSortedFilteredIssues)
-    })
-}
+        const firstDate = mappedSortedFilteredIssues[0].done
+        const lastDate = mappedSortedFilteredIssues[mappedSortedFilteredIssues.length - 1].done
+        const iterationCount = numberOfFullIterations(firstDate, lastDate)
 
-function simplifyIssue(issue) {
-    return {
-        id: issue.id,
-        points: issue.fields.customfield_10004,
-        done: new Date(issue.fields.resolutiondate),
-        platforms: getPlatforms(issue)
-    }
+        const lastDateWeCareAbout = new Date(firstDate)
+        lastDateWeCareAbout.setDate(lastDateWeCareAbout.getDate() + iterationCount * 7)
+
+        callback({
+            issues: mappedSortedFilteredIssues,
+            firstDate,
+            lastDateWeCareAbout,
+            numberOfFullIterations: iterationCount
+        })
+    })
 }
 
 function getIssuesForSprints(callback) {
@@ -41,10 +46,17 @@ function getIssuesForSprints(callback) {
         })
 }
 
-function platformVelocity(velocityByIteration, platform) {
-    const totalPoints = velocityByIteration
-        .reduce((total, iteration) => total + iteration[platform], 0)
-    return (totalPoints / velocityByIteration.length).toFixed(1)
+function simplifyIssue(issue) {
+    return {
+        id: issue.id,
+        points: issue.fields.customfield_10004,
+        done: new Date(issue.fields.resolutiondate),
+        platforms: getPlatforms(issue)
+    }
+}
+
+function numberOfFullIterations(firstDate, lastDate) {
+    return Math.floor((lastDate - firstDate) / millisecondsPerWeek)
 }
 
 function addToDOM(velocityByIteration) {
@@ -64,29 +76,26 @@ function addToDOM(velocityByIteration) {
     pageContainer.prepend(newDiv)
 }
 
+function platformVelocity(velocityByIteration, platform) {
+    const totalPoints = velocityByIteration
+        .reduce((total, iteration) => total + iteration[platform], 0)
+    return (totalPoints / velocityByIteration.length).toFixed(1)
+}
+
 function figureOutVelocity() {
-    getValidSortedDedupedIssues(issues => {
-        const firstDate = issues[0].done
-        const lastDate = issues[issues.length - 1].done
-        const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7
-        const numberOfIterations = Math.floor((lastDate - firstDate) / millisecondsPerWeek)
-        // console.log(`number of iterations: ${ numberOfIterations }`)
-
-        const lastDateWeCareAbout = new Date(firstDate)
-        lastDateWeCareAbout.setDate(lastDateWeCareAbout.getDate() + numberOfIterations * 7)
-
-        const issuesInChosenSprints = issues
-            .filter(issue => issue.done < lastDateWeCareAbout)
+    getValidSortedDedupedIssues(data => {
+        const issuesInChosenSprints = data.issues
+            .filter(issue => issue.done < data.lastDateWeCareAbout)
         const initialTotalVelocity = issuesInChosenSprints.reduce((total, issue) => total + issue.points * issue.platforms.length, 0)
 
         const iterations = []
-        for(i = 0; i < numberOfIterations; i++) {
+        for(i = 0; i < data.numberOfFullIterations; i++) {
             iterations.push({ [ANDROID]: 0, [APPLE]: 0, [WEB]: 0, [TE]: 0, issueIds: [] })
         }
 
         const velocityByIteration = issuesInChosenSprints
             .reduce((result, issue) => {
-                const iterationIndex = Math.floor((issue.done - firstDate) / millisecondsPerWeek)
+                const iterationIndex = Math.floor((issue.done - data.firstDate) / millisecondsPerWeek)
                 issue.platforms.forEach(platform => result[iterationIndex][platform] += issue.points)
                 result[iterationIndex].issueIds.push(issue.id)
                 return result
