@@ -2,6 +2,7 @@ const { filterOutInvalidIssues } = require('./helpers.js')
 const { issueData, simplifyIssue } = require('./issue-transformers.js')
 const { getSprintIssues } = require('./jira-api.js')
 const { APPLE, ANDROID, WEB, TE, MILLISECONDS_PER_WEEK } = require('./constants.js')
+const { platformVelocity, totalPointsFromIssues, totalPointsFromIterations } = require('./math-helpers.js')
 
 const sprintIds = [
     // 1405, // 28
@@ -50,17 +51,11 @@ function addToDOM(velocityByIteration) {
     pageContainer.prepend(newDiv)
 }
 
-function platformVelocity(velocityByIteration, platform) {
-    const totalPoints = velocityByIteration
-        .reduce((total, iteration) => total + iteration[platform], 0)
-    return (totalPoints / velocityByIteration.length).toFixed(1)
-}
-
 function figureOutVelocity() {
     getValidSortedDedupedIssues(data => {
         const issuesInChosenSprints = data.issues
             .filter(issue => issue.done < data.lastDateWeCareAbout)
-        const initialTotalVelocity = issuesInChosenSprints.reduce((total, issue) => total + issue.points * issue.platforms.length, 0)
+        const initialTotalVelocity = totalPointsFromIssues(issuesInChosenSprints)
 
         const iterations = []
         for(i = 0; i < data.numberOfFullIterations; i++) {
@@ -77,7 +72,7 @@ function figureOutVelocity() {
             iterations)
         // console.log(velocityByIteration)
 
-        const decomposedTotalVelocity = velocityByIteration.reduce((total, iteration) => total + iteration[TE] + iteration[ANDROID] + iteration[APPLE] + iteration[WEB], 0)
+        const decomposedTotalVelocity = totalPointsFromIterations(velocityByIteration)
         if(decomposedTotalVelocity === initialTotalVelocity) {
             console.log(`Android running velocity: ${platformVelocity(velocityByIteration, ANDROID)}`)
             console.log(`Apple running velocity: ${platformVelocity(velocityByIteration, APPLE)}`)
