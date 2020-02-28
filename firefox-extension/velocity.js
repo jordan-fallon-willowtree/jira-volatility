@@ -53,14 +53,14 @@ function addToDOM(velocityByIteration) {
 
 function figureOutVelocity() {
     getValidSortedDedupedIssues(data => {
-        const initialTotalVelocity = totalPointsFromIssues(issuesInChosenSprints)
+        const initialTotalVelocity = totalPointsFromIssues(data.issues)
 
         const iterations = []
         for(i = 0; i < data.numberOfFullIterations; i++) {
             iterations.push({ [ANDROID]: 0, [APPLE]: 0, [WEB]: 0, [TE]: 0, issueIds: [] })
         }
 
-        const velocityByIteration = issuesInChosenSprints
+        const velocityByIteration = data.issues
             .reduce((result, issue) => {
                 const iterationIndex = Math.floor((issue.done - data.firstDate) / MILLISECONDS_PER_WEEK)
                 issue.platforms.forEach(platform => result[iterationIndex][platform] += issue.points)
