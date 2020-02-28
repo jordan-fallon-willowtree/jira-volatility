@@ -28,34 +28,38 @@ describe('Issue transformers', () => {
     })
 
     describe('issueData', () => {
-        it('returns the list of issues', () => {
-            const issues = [{id: 5}, {id: 7}]
-            const data = issueData(issues)
-            expect(data.issues).toBe(issues)
-        })
-
         it('returns the done date from the first issue, as they are sorted by date', () => {
             const jan1 = new Date('2019-01-01T12:34:56.000Z')
-            const jan5 = new Date('2019-01-05T12:34:56.000Z')
-            const jan13 = new Date('2019-01-13T12:34:56.000Z')
+            const jan1Issue = {done: jan1}
+            const jan5Issue = {done: new Date('2019-01-05T12:34:56.000Z')}
+            const jan13Issue = {done: new Date('2019-01-13T12:34:56.000Z')}
 
-            const issues = [{done: jan1}, {done: jan5}, {done: jan13}]
-            const data = issueData(issues)
+            const data = issueData([jan1Issue, jan5Issue, jan13Issue])
 
             expect(data.firstDate).toBe(jan1)
         })
 
         it('returns the last date we care about, based on how many full iterations there are', () => {
-            const jan1 = new Date('2019-01-01T12:34:56.000Z')
-            const jan5 = new Date('2019-01-05T12:34:56.000Z')
-            const jan13 = new Date('2019-01-13T12:34:56.000Z')
-            const jan17 = new Date('2019-01-17T12:34:56.000Z')
+            const jan1Issue = {done: new Date('2019-01-01T12:34:56.000Z')}
+            const jan5Issue = {done: new Date('2019-01-05T12:34:56.000Z')}
+            const jan13Issue = {done: new Date('2019-01-13T12:34:56.000Z')}
+            const jan17Issue = {done: new Date('2019-01-17T12:34:56.000Z')}
 
-            const issues = [{done: jan1}, {done: jan5}, {done: jan13}, {done: jan17}]
-            const data = issueData(issues)
+            const data = issueData([jan1Issue, jan5Issue, jan13Issue, jan17Issue])
 
             expect(data.numberOfFullIterations).toBe(2)
-            expect(data.lastDateWeCareAbout).toEqual(new Date('2019-01-15T12:34:56.000Z'))
+        })
+
+        it('returns issues between the first date and last date we care about', () => {
+            const jan1Issue = {done: new Date('2019-01-01T12:34:56.000Z')}
+            const jan5Issue = {done: new Date('2019-01-05T12:34:56.000Z')}
+            const jan13Issue = {done: new Date('2019-01-13T12:34:56.000Z')}
+            const jan17Issue = {done: new Date('2019-01-17T12:34:56.000Z')}
+
+            const data = issueData([jan1Issue, jan5Issue, jan13Issue, jan17Issue])
+
+            expect(data.issues.length).toEqual(3)
+            expect(data.issues).toEqual([jan1Issue, jan5Issue, jan13Issue])
         })
     })
 })

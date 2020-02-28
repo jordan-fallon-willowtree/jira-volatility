@@ -53,8 +53,6 @@ function addToDOM(velocityByIteration) {
 
 function figureOutVelocity() {
     getValidSortedDedupedIssues(data => {
-        const issuesInChosenSprints = data.issues
-            .filter(issue => issue.done < data.lastDateWeCareAbout)
         const initialTotalVelocity = totalPointsFromIssues(issuesInChosenSprints)
 
         const iterations = []

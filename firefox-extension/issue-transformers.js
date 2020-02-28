@@ -18,10 +18,12 @@ function issueData(issues) {
     const lastDateWeCareAbout = new Date(firstDate)
     lastDateWeCareAbout.setDate(lastDateWeCareAbout.getDate() + iterationCount * 7)
 
+    const issuesWeCareAbout = issues
+        .filter(issue => issue.done < lastDateWeCareAbout)
+
     return {
-        issues,
+        issues: issuesWeCareAbout,
         firstDate,
-        lastDateWeCareAbout,
         numberOfFullIterations: iterationCount
     }
 }
