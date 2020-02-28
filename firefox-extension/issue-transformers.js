@@ -13,10 +13,10 @@ function simplifyIssue(issue) {
 function issueData(issues) {
     const firstDate = issues[0].done
     const lastDate = issues[issues.length - 1].done
-    const iterationCount = numberOfFullIterations(firstDate, lastDate)
+    const numberOfFullIterations = Math.floor((lastDate - firstDate) / MILLISECONDS_PER_WEEK)
 
     const lastDateWeCareAbout = new Date(firstDate)
-    lastDateWeCareAbout.setDate(lastDateWeCareAbout.getDate() + iterationCount * 7)
+    lastDateWeCareAbout.setDate(lastDateWeCareAbout.getDate() + numberOfFullIterations * 7)
 
     const issuesWeCareAbout = issues
         .filter(issue => issue.done < lastDateWeCareAbout)
@@ -24,12 +24,8 @@ function issueData(issues) {
     return {
         issues: issuesWeCareAbout,
         firstDate,
-        numberOfFullIterations: iterationCount
+        numberOfFullIterations
     }
-}
-
-function numberOfFullIterations(firstDate, lastDate) {
-    return Math.floor((lastDate - firstDate) / MILLISECONDS_PER_WEEK)
 }
 
 module.exports = { simplifyIssue, issueData }

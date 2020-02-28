@@ -1,6 +1,5 @@
 const { APPLE, ANDROID } = require('../firefox-extension/constants.js')
 const { simplifyIssue, issueData } = require('../firefox-extension/issue-transformers.js')
-const { issueWithId, issueWithResolutionDate } = require('./support/spec-helpers.js')
 
 describe('Issue transformers', () => {
     describe('simplifyIssue', () => {
