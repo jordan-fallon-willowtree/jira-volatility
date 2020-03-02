@@ -1,4 +1,4 @@
-const { platformVelocity, totalPointsFromIssues, totalPointsFromIterations } = require('../firefox-extension/math-helpers.js')
+const { platformVelocity, totalPointsFromIssues, totalPointsFromIterations, platformVolatility } = require('../firefox-extension/math-helpers.js')
 const { ANDROID, APPLE, WEB, TE } = require('../firefox-extension/constants.js')
 
 describe('math helpers', () => {
@@ -39,6 +39,22 @@ describe('math helpers', () => {
             ]
 
             expect(totalPointsFromIterations(iterations)).toEqual(50)
+        })
+    })
+
+    describe('platform volatility', () => {
+        it('calculates the variance in velocity over the given iterations', () => {
+            const iterations = [
+                {[ANDROID]: 22, [APPLE]: 4, [WEB]: 5, [TE]: 100},
+                {[ANDROID]: 13, [APPLE]: 5, [WEB]: 5, [TE]: 99},
+                {[ANDROID]: 17, [APPLE]: 4, [WEB]: 5, [TE]: 100},
+                {[ANDROID]: 19, [APPLE]: 5, [WEB]: 5, [TE]: 101},
+            ]
+
+            expect(platformVolatility(iterations, WEB)).toEqual(0.0)
+            expect(platformVolatility(iterations, TE)).toEqual(1.4)
+            expect(platformVolatility(iterations, ANDROID)).toEqual(36.9)
+            expect(platformVolatility(iterations, APPLE)).toEqual(22.2)
         })
     })
 })
