@@ -2,7 +2,7 @@ const { filterOutInvalidIssues } = require('./helpers.js')
 const { issueData, simplifyIssue } = require('./issue-transformers.js')
 const { getSprintIssues } = require('./jira-api.js')
 const { APPLE, ANDROID, WEB, TE, MILLISECONDS_PER_WEEK } = require('./constants.js')
-const { totalPointsFromIssues, totalPointsFromIterations, RecentCompletedIterations } = require('./math-helpers.js')
+const { totalPointsFromIssues, totalPointsFromIterations, AgileCalculator } = require('./math-helpers.js')
 
 const sprintIds = [
     // 1405, // 28
@@ -17,7 +17,7 @@ function figureOutVelocity() {
         const initialTotalVelocity = totalPointsFromIssues(data.issues)
         const iterations = buildIterations(data)
         const decomposedTotalVelocity = totalPointsFromIterations(iterations)
-        const recentIterations = new RecentCompletedIterations(iterations)
+        const recentIterations = new AgileCalculator(iterations)
 
         if(decomposedTotalVelocity === initialTotalVelocity) {
             console.log(`Android running velocity: ${recentIterations.velocity(ANDROID)}, and volatility: ${recentIterations.volatility(ANDROID)}`)

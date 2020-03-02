@@ -20,7 +20,7 @@ function sum(total, next) {
     return total + next
 }
 
-class RecentCompletedIterations {
+class AgileCalculator {
     constructor(iterations) {
         this.iterations = iterations
     }
@@ -39,4 +39,4 @@ class RecentCompletedIterations {
     }
 }
 
-module.exports = { std, totalPointsFromIssues, totalPointsFromIterations, RecentCompletedIterations }
+module.exports = { std, totalPointsFromIssues, totalPointsFromIterations, AgileCalculator }
