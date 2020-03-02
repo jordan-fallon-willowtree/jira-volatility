@@ -14,15 +14,6 @@ function totalPointsFromIterations(iterations) {
     return iterations.reduce((total, iteration) => total + iteration[TE] + iteration[ANDROID] + iteration[APPLE] + iteration[WEB], 0)
 }
 
-function platformVolatility(iterations, platform) {
-    const velocity = platformVelocity(iterations, platform)
-
-    const std = Math.sqrt(iterations
-        .map(iteration => Math.pow(iteration[platform] - velocity, 2))
-        .reduce((total, next) => total + next, 0))
-    return Math.floor(std / velocity * 1000) / 10
-}
-
 class RecentCompletedIterations {
     constructor(iterations) {
         this.iterations = iterations
@@ -35,6 +26,14 @@ class RecentCompletedIterations {
             .reduce((total, iteration) => total + iteration[platform], 0)
         return Math.floor(totalPoints / this.iterationCount * 10) / 10
     }
+
+    volatility(platform) {
+        const velocity = this.velocity(platform)
+        const std = Math.sqrt(this.iterations
+            .map(iteration => Math.pow(iteration[platform] - velocity, 2))
+            .reduce((total, next) => total + next, 0))
+        return Math.floor(std / velocity * 1000) / 10
+    }
 }
 
-module.exports = { totalPointsFromIssues, totalPointsFromIterations, platformVolatility, RecentCompletedIterations }
+module.exports = { totalPointsFromIssues, totalPointsFromIterations, RecentCompletedIterations }

@@ -1,4 +1,4 @@
-const { RecentCompletedIterations, totalPointsFromIssues, totalPointsFromIterations, platformVolatility } = require('../firefox-extension/math-helpers.js')
+const { RecentCompletedIterations, totalPointsFromIssues, totalPointsFromIterations } = require('../firefox-extension/math-helpers.js')
 const { ANDROID, APPLE, WEB, TE } = require('../firefox-extension/constants.js')
 
 describe('RecentCompletedIterations', () => {
@@ -51,11 +51,12 @@ describe('RecentCompletedIterations', () => {
                 {[ANDROID]: 17, [APPLE]: 4, [WEB]: 5, [TE]: 100},
                 {[ANDROID]: 19, [APPLE]: 5, [WEB]: 5, [TE]: 101},
             ]
+            const recentIterations = new RecentCompletedIterations(iterations)
 
-            expect(platformVolatility(iterations, WEB)).toEqual(0.0)
-            expect(platformVolatility(iterations, TE)).toEqual(1.4)
-            expect(platformVolatility(iterations, ANDROID)).toEqual(36.9)
-            expect(platformVolatility(iterations, APPLE)).toEqual(22.2)
+            expect(recentIterations.volatility(WEB)).toEqual(0.0)
+            expect(recentIterations.volatility(TE)).toEqual(1.4)
+            expect(recentIterations.volatility(ANDROID)).toEqual(36.9)
+            expect(recentIterations.volatility(APPLE)).toEqual(22.2)
         })
     })
 })

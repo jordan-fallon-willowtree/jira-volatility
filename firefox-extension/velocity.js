@@ -2,7 +2,7 @@ const { filterOutInvalidIssues } = require('./helpers.js')
 const { issueData, simplifyIssue } = require('./issue-transformers.js')
 const { getSprintIssues } = require('./jira-api.js')
 const { APPLE, ANDROID, WEB, TE, MILLISECONDS_PER_WEEK } = require('./constants.js')
-const { platformVolatility, totalPointsFromIssues, totalPointsFromIterations, RecentCompletedIterations } = require('./math-helpers.js')
+const { totalPointsFromIssues, totalPointsFromIterations, RecentCompletedIterations } = require('./math-helpers.js')
 
 const sprintIds = [
     // 1405, // 28
@@ -20,7 +20,7 @@ function figureOutVelocity() {
         const recentIterations = new RecentCompletedIterations(iterations)
 
         if(decomposedTotalVelocity === initialTotalVelocity) {
-            console.log(`Android running velocity: ${recentIterations.velocity(ANDROID)}, and volatility: ${platformVolatility(iterations, ANDROID)}`)
+            console.log(`Android running velocity: ${recentIterations.velocity(ANDROID)}, and volatility: ${recentIterations.volatility(ANDROID)}`)
             console.log(`Apple running velocity: ${recentIterations.velocity(APPLE)}`)
             console.log(`Web running velocity: ${recentIterations.velocity(WEB)}`)
             console.log(`TE running velocity: ${recentIterations.velocity(TE)}`)
