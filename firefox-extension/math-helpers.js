@@ -23,4 +23,18 @@ function platformVolatility(iterations, platform) {
     return Math.floor(std / velocity * 1000) / 10
 }
 
-module.exports = { platformVelocity, totalPointsFromIssues, totalPointsFromIterations, platformVolatility }
+class RecentCompletedIterations {
+    constructor(iterations) {
+        this.iterations = iterations
+    }
+
+    get iterationCount() { return this.iterations.length }
+
+    velocity(platform) {
+        const totalPoints = this.iterations
+            .reduce((total, iteration) => total + iteration[platform], 0)
+        return Math.floor(totalPoints / this.iterationCount * 10) / 10
+    }
+}
+
+module.exports = { totalPointsFromIssues, totalPointsFromIterations, platformVolatility, RecentCompletedIterations }

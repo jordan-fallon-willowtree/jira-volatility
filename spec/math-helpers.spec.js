@@ -1,18 +1,19 @@
-const { platformVelocity, totalPointsFromIssues, totalPointsFromIterations, platformVolatility } = require('../firefox-extension/math-helpers.js')
+const { RecentCompletedIterations, totalPointsFromIssues, totalPointsFromIterations, platformVolatility } = require('../firefox-extension/math-helpers.js')
 const { ANDROID, APPLE, WEB, TE } = require('../firefox-extension/constants.js')
 
-describe('math helpers', () => {
-    describe('platformVelocity', () => {
+describe('RecentCompletedIterations', () => {
+    describe('velocity', () => {
         it('finds an average points for each platform', () => {
-            const velocityByIteration = [
+            const iterations = [
                 {[ANDROID]: 15, [APPLE]: 7},
                 {[ANDROID]: 5, [APPLE]: 0},
                 {[ANDROID]: 7, [APPLE]: 11},
                 {[ANDROID]: 13, [APPLE]: 8},
             ]
+            const recentIterations = new RecentCompletedIterations(iterations)
 
-            expect(platformVelocity(velocityByIteration, ANDROID)).toEqual(10)
-            expect(platformVelocity(velocityByIteration, APPLE)).toEqual(6.5)
+            expect(recentIterations.velocity(ANDROID)).toEqual(10)
+            expect(recentIterations.velocity(APPLE)).toEqual(6.5)
         })
     })
 

@@ -2,7 +2,7 @@ const { filterOutInvalidIssues } = require('./helpers.js')
 const { issueData, simplifyIssue } = require('./issue-transformers.js')
 const { getSprintIssues } = require('./jira-api.js')
 const { APPLE, ANDROID, WEB, TE, MILLISECONDS_PER_WEEK } = require('./constants.js')
-const { platformVelocity, platformVolatility, totalPointsFromIssues, totalPointsFromIterations } = require('./math-helpers.js')
+const { platformVolatility, totalPointsFromIssues, totalPointsFromIterations, RecentCompletedIterations } = require('./math-helpers.js')
 
 const sprintIds = [
     // 1405, // 28
@@ -17,14 +17,15 @@ function figureOutVelocity() {
         const initialTotalVelocity = totalPointsFromIssues(data.issues)
         const iterations = buildIterations(data)
         const decomposedTotalVelocity = totalPointsFromIterations(iterations)
+        const recentIterations = new RecentCompletedIterations(iterations)
 
         if(decomposedTotalVelocity === initialTotalVelocity) {
-            console.log(`Android running velocity: ${platformVelocity(iterations, ANDROID)}, and volatility: ${platformVolatility(iterations, ANDROID)}`)
-            console.log(`Apple running velocity: ${platformVelocity(iterations, APPLE)}`)
-            console.log(`Web running velocity: ${platformVelocity(iterations, WEB)}`)
-            console.log(`TE running velocity: ${platformVelocity(iterations, TE)}`)
+            console.log(`Android running velocity: ${recentIterations.velocity(ANDROID)}, and volatility: ${platformVolatility(iterations, ANDROID)}`)
+            console.log(`Apple running velocity: ${recentIterations.velocity(APPLE)}`)
+            console.log(`Web running velocity: ${recentIterations.velocity(WEB)}`)
+            console.log(`TE running velocity: ${recentIterations.velocity(TE)}`)
 
-            addToDOM(iterations)
+            addToDOM(recentIterations)
         } else {
             console.log(`Something went wrong! Our initial total velocity of ${initialTotalVelocity} wasn't reflected in the final calculation. Instead, we got ${decomposedTotalVelocity}`)
         }
@@ -75,10 +76,10 @@ function addToDOM(iterations) {
     newDiv.innerHTML = `
         <div style="font-size: 18px; font-weight: bold;">
             Velocity <i>(avg points / week for the last 4 sprints)</i>:
-            <span style="color: #A4C639;">Android - ${platformVelocity(iterations, ANDROID)}</span> |
-            <span style="color: #7D7D7D;">Apple - ${platformVelocity(iterations, APPLE)}</span> |
-            <span style="color: #007ACC;">Web - ${platformVelocity(iterations, WEB)}</span> |
-            <span style="color: #009800;">TE - ${platformVelocity(iterations, TE)}</span>
+            <span style="color: #A4C639;">Android - ${iterations.velocity(ANDROID)}</span> |
+            <span style="color: #7D7D7D;">Apple - ${iterations.velocity(APPLE)}</span> |
+            <span style="color: #007ACC;">Web - ${iterations.velocity(WEB)}</span> |
+            <span style="color: #009800;">TE - ${iterations.velocity(TE)}</span>
         </div>
     `
 
