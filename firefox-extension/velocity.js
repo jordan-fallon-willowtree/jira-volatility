@@ -2,7 +2,8 @@ const { filterOutInvalidIssues } = require('./helpers.js')
 const { issueData, simplifyIssue } = require('./issue-transformers.js')
 const { getSprintIssues } = require('./jira-api.js')
 const { APPLE, ANDROID, WEB, TE, MILLISECONDS_PER_WEEK } = require('./constants.js')
-const { totalPointsFromIssues, totalPointsFromIterations, AgileCalculator } = require('./math-helpers.js')
+const { totalPointsFromIssues } = require('./math-helpers.js')
+const { AgileCalculator } = require('./agile-calculator.js')
 
 const sprintIds = [
     // 1405, // 28
@@ -16,16 +17,15 @@ function figureOutVelocity() {
     getValidSortedDedupedIssues(data => {
         const initialTotalVelocity = totalPointsFromIssues(data.issues)
         const iterations = buildIterations(data)
-        const decomposedTotalVelocity = totalPointsFromIterations(iterations)
-        const recentIterations = new AgileCalculator(iterations)
+        const calculator = new AgileCalculator(iterations)
 
-        if(decomposedTotalVelocity === initialTotalVelocity) {
-            console.log(`Android running velocity: ${recentIterations.velocity(ANDROID)}, and volatility: ${recentIterations.volatility(ANDROID)}`)
-            console.log(`Apple running velocity: ${recentIterations.velocity(APPLE)}, and volatility: ${recentIterations.volatility(APPLE)}`)
-            console.log(`Web running velocity: ${recentIterations.velocity(WEB)}, and volatility: ${recentIterations.volatility(WEB)}`)
-            console.log(`TE running velocity: ${recentIterations.velocity(TE)}, and volatility: ${recentIterations.volatility(TE)}`)
+        if(calculator.totalPoints() === initialTotalVelocity) {
+            console.log(`Android running velocity: ${calculator.velocity(ANDROID)}, and volatility: ${calculator.volatility(ANDROID)}`)
+            console.log(`Apple running velocity: ${calculator.velocity(APPLE)}, and volatility: ${calculator.volatility(APPLE)}`)
+            console.log(`Web running velocity: ${calculator.velocity(WEB)}, and volatility: ${calculator.volatility(WEB)}`)
+            console.log(`TE running velocity: ${calculator.velocity(TE)}, and volatility: ${calculator.volatility(TE)}`)
 
-            addToDOM(recentIterations)
+            addToDOM(calculator)
         } else {
             console.log(`Something went wrong! Our initial total velocity of ${initialTotalVelocity} wasn't reflected in the final calculation. Instead, we got ${decomposedTotalVelocity}`)
         }
