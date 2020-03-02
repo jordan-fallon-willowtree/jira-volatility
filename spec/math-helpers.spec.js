@@ -1,7 +1,7 @@
-const { std, Agilecalculator, totalPointsFromIssues, totalPointsFromIterations } = require('../firefox-extension/math-helpers.js')
+const { std, AgileCalculator, totalPointsFromIssues, totalPointsFromIterations } = require('../firefox-extension/math-helpers.js')
 const { ANDROID, APPLE, WEB, TE } = require('../firefox-extension/constants.js')
 
-describe('Agilecalculator', () => {
+describe('AgileCalculator', () => {
     describe('velocity', () => {
         it('finds an average points for each platform', () => {
             const iterations = [
@@ -10,7 +10,7 @@ describe('Agilecalculator', () => {
                 {[ANDROID]: 7, [APPLE]: 11},
                 {[ANDROID]: 13, [APPLE]: 8},
             ]
-            const recentIterations = new Agilecalculator(iterations)
+            const recentIterations = new AgileCalculator(iterations)
 
             expect(recentIterations.velocity(ANDROID)).toEqual(10)
             expect(recentIterations.velocity(APPLE)).toEqual(6.5)
@@ -51,7 +51,7 @@ describe('Agilecalculator', () => {
                 {[ANDROID]: 17, [APPLE]: 4, [WEB]: 5, [TE]: 100},
                 {[ANDROID]: 19, [APPLE]: 5, [WEB]: 5, [TE]: 101},
             ]
-            const recentIterations = new Agilecalculator(iterations)
+            const recentIterations = new AgileCalculator(iterations)
 
             expect(recentIterations.volatility(WEB)).toEqual(0.0)
             expect(recentIterations.volatility(TE)).toEqual(0.7)

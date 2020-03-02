@@ -21,9 +21,9 @@ function figureOutVelocity() {
 
         if(decomposedTotalVelocity === initialTotalVelocity) {
             console.log(`Android running velocity: ${recentIterations.velocity(ANDROID)}, and volatility: ${recentIterations.volatility(ANDROID)}`)
-            console.log(`Apple running velocity: ${recentIterations.velocity(APPLE)}`)
-            console.log(`Web running velocity: ${recentIterations.velocity(WEB)}`)
-            console.log(`TE running velocity: ${recentIterations.velocity(TE)}`)
+            console.log(`Apple running velocity: ${recentIterations.velocity(APPLE)}, and volatility: ${recentIterations.volatility(APPLE)}`)
+            console.log(`Web running velocity: ${recentIterations.velocity(WEB)}, and volatility: ${recentIterations.volatility(WEB)}`)
+            console.log(`TE running velocity: ${recentIterations.velocity(TE)}, and volatility: ${recentIterations.volatility(TE)}`)
 
             addToDOM(recentIterations)
         } else {
