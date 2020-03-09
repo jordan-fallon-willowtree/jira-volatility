@@ -9,8 +9,8 @@ class AgileCalculator {
     get iterationCount() { return this.iterations.length }
 
     velocity(platform) {
-        const totalPoints = this.iterations
-            .reduce((total, iteration) => total + iteration[platform], 0)
+        let totalPoints = this.iterations
+            .reduce((total, iteration) => total + iteration[platform] * 1/iteration.teamStrength, 0)
         return Math.floor(totalPoints / this.iterationCount * 10) / 10
     }
 

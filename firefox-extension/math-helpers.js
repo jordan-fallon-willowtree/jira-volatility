@@ -1,5 +1,3 @@
-const { ANDROID, APPLE, WEB, TE } = require('./constants.js')
-
 function totalPointsFromIssues(issues) {
     return issues.reduce((total, issue) => total + issue.points * issue.platforms.length, 0)
 }

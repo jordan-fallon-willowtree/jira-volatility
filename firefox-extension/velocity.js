@@ -1,6 +1,6 @@
 const { filterOutInvalidIssues } = require('./helpers.js')
 const { issueData, simplifyIssue } = require('./issue-transformers.js')
-const { getSprintIssues } = require('./jira-api.js')
+const { getSprintIssues, getSprints } = require('./jira-api.js')
 const { APPLE, ANDROID, WEB, TE, MILLISECONDS_PER_WEEK } = require('./constants.js')
 const { totalPointsFromIssues } = require('./math-helpers.js')
 const { AgileCalculator } = require('./agile-calculator.js')
@@ -66,21 +66,22 @@ function buildIterations(data) {
             const iterationIndex = Math.floor((issue.done - data.firstDate) / MILLISECONDS_PER_WEEK)
             issue.platforms.forEach(platform => result[iterationIndex][platform] += issue.points)
             result[iterationIndex].issueIds.push(issue.id)
+            result[iterationIndex].teamStrength = 1
             return result
         },
         iterations)
 }
 
-function addToDOM(iterations) {
+function addToDOM(calculator) {
     const newDiv = document.createElement('div')
     newDiv.id = 'velocity-helper'
     newDiv.innerHTML = `
         <div style="font-size: 18px; font-weight: bold;">
             Velocity <i>(avg points / week for the last 4 sprints)</i>:
-            <span style="color: #A4C639;">Android - ${iterations.velocity(ANDROID)}</span> |
-            <span style="color: #7D7D7D;">Apple - ${iterations.velocity(APPLE)}</span> |
-            <span style="color: #007ACC;">Web - ${iterations.velocity(WEB)}</span> |
-            <span style="color: #009800;">TE - ${iterations.velocity(TE)}</span>
+            <span style="color: #A4C639;">Android - ${calculator.velocity(ANDROID)}</span> |
+            <span style="color: #7D7D7D;">Apple - ${calculator.velocity(APPLE)}</span> |
+            <span style="color: #007ACC;">Web - ${calculator.velocity(WEB)}</span> |
+            <span style="color: #009800;">TE - ${calculator.velocity(TE)}</span>
         </div>
     `
 
