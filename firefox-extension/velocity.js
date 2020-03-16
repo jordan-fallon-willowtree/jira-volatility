@@ -8,11 +8,13 @@ const { AgileCalculator } = require('./agile-calculator.js')
 const sprintIds = [
     // 1405, // 28
     // 1406, // 29
-    1414, // 30
+    // 1414, // 30
     1422, // 31
     1424, // 32
     1436, // 33
+    1454, // 34
 ]
+// getSprints()
 
 function figureOutVelocity() {
     getValidSortedDedupedIssues(data => {
